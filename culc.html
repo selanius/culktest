@@ -4,49 +4,50 @@
 <head>
     <meta charset="utf-8">
     <title>シンプルな電卓</title>
-    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Inconsolata', monospace;
-            color: #555;
-        }
-        
-        body {
-            background-color: #3fb399;
-        }
-        
-        .container {
-            width: 320px;
-            background-color: white;
-            margin: 120px auto;
-        }
-        
-        table {
-            width: 100%;
-            border-color: #f4f4f4;
-        }
-        
-        td {
-            width: 25%;
-        }
-        
-        button {
-            width: 100%;
-            height: 70px;
-            font-size: 24px;
-            background-color: white;
-            border: none;
-        }
-        
-        #inputLabel {
-            height: 120px;
-            font-size: 40px;
-            vertical-align: bottom;
-            text-align: right;
-            padding-right: 16px;
-            background-color: #ececec;
-        }
-    </style>
+    <script type=“text/javascript” src=“https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js”></script>
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+        <style>
+            * {
+                font-family: 'Inconsolata', monospace;
+                color: #555;
+            }
+            
+            body {
+                background-color: #3fb399;
+            }
+            
+            .container {
+                width: 320px;
+                background-color: white;
+                margin: 120px auto;
+            }
+            
+            table {
+                width: 100%;
+                border-color: #f4f4f4;
+            }
+            
+            td {
+                width: 25%;
+            }
+            
+            button {
+                width: 100%;
+                height: 70px;
+                font-size: 24px;
+                background-color: white;
+                border: none;
+            }
+            
+            #inputLabel {
+                height: 120px;
+                font-size: 40px;
+                vertical-align: bottom;
+                text-align: right;
+                padding-right: 16px;
+                background-color: #ececec;
+            }
+        </style>
 </head>
 
 <body>
@@ -85,6 +86,10 @@
         </table>
     </div>
 
+    <div role="button" id="run">
+        <span class="ms-Button-label">Excel Run</span>
+    </div>
+
     <script>
         var inputLabel = document.getElementById('inputLabel');
 
@@ -105,6 +110,36 @@
                 } else {
                     inputLabel.innerHTML += pushed;
                 }
+            }
+        }
+    </script>
+
+    <script>
+        Office.onReady(info => {
+            if (info.host === Office.HostType.Excel) {
+                document.getElementById("run").onclick = run;
+            }
+        });
+
+        export async function run() {
+            try {
+                await Excel.run(async context => {
+                    /**
+                     * Insert your Excel code here
+                     */
+                    const range = context.workbook.getSelectedRange();
+
+                    // Read the range address
+                    range.load("address");
+
+                    // Update the fill color
+                    range.format.fill.color = "yellow";
+
+                    await context.sync();
+                    console.log(`The range address was ${range.address}.`);
+                });
+            } catch (error) {
+                console.error(error);
             }
         }
     </script>
